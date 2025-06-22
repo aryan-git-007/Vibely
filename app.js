@@ -137,36 +137,6 @@ app.post("/post/edit/:id", isloggedin, async (req, res) => {
     }
 });
 
-// Delete post route
-app.get("/post/delete/:id", isloggedin, async (req, res) => {
-    try {
-        // Find the post first
-        const post = await Post.findOne({ _id: req.params.id });
-
-        if (!post) {
-            return res.status(404).send("Post not found.");
-        }
-        
-        // Check if the logged-in user is the author of the post
-        if (post.user.toString() !== req.user.userid.toString()) {
-            return res.status(403).send("You do not have permission to delete this post.");
-        }
-
-        // Remove post from user's posts array
-        const user = await User.findOne({ email: req.user.email });
-        user.posts = user.posts.filter(postId => postId.toString() !== req.params.id);
-        await user.save();
-
-        // Delete the post
-        await Post.findByIdAndDelete(req.params.id);
-
-        res.redirect("/profile");
-    } catch (error) {
-        console.error("Error deleting post:", error);
-        res.status(500).send("Error deleting post");
-    }
-});
-
 //middleware
 function isloggedin(req, res, next) {
    if(!req.cookies.token || req.cookies.token === "") {
