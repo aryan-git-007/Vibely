@@ -31,8 +31,15 @@ app.get("/create",(req,res)=>{
     let{email , password , username , name , age}=req.body;
 
     //checking user exist
-     let user = await  User.findOne({email});
-     if(user) return res.status(500).send("User is already exist");
+     let existingUser = await User.findOne({ $or: [{ email }, { username }] });
+     if (existingUser) {
+        if (existingUser.email === email) {
+            return res.status(409).send("User with this email already exists.");
+        }
+        if (existingUser.username === username) {
+            return res.status(409).send("Username is already taken.");
+        }
+    }
     
     //bcrypt for password encryption
     bcrypt.genSalt(10 , (err, salt)=>{
@@ -48,7 +55,7 @@ app.get("/create",(req,res)=>{
            });
            const token = jwt.sign({email: email, userid: user._id}, "secret");
            res.cookie("token", token);
-           res.send('registered');
+           res.redirect('/login?message=Registration+successful.+Please+login.');
         })
     });
 });
@@ -57,19 +64,22 @@ app.get("/create",(req,res)=>{
 app.post("/login",async (req, res) => {
     let { email, password } = req.body;
     let user = await User.findOne({ email });
-    if (!user) return res.status(500).send("Something went wrong");
+    if (!user) return res.render("login" ,{error: "Invalid email or password."});
 
     bcrypt.compare(password, user.password, (err, result) => {
-        if (err) return res.status(500).send("Error comparing passwords");
-        const token = jwt.sign({email: email, userid: user._id}, "secret");
-        res.cookie("token", token);
-        if (result) res.status(200).redirect("/profile");
-        else res.redirect("/login");  
+        if (err) return res.render("login" ,{error: "Something went wrong."});
+        if (result) {
+            const token = jwt.sign({email: email, userid: user._id}, "secret");
+            res.cookie("token", token);
+            return res.redirect("/profile");
+        }
+        else return res.render("login" ,{error: "Invalid email or password."});  
     });
 });
 
 app.get("/login", (req, res) => {
-    res.render("login");
+    const message = req.query.message;
+    res.render("login" , {error: message || ""});
 });
 
 //logout
@@ -99,17 +109,40 @@ app.post("/post", isloggedin, async (req,res)=>{
 })
 
 //like feature
-app.get("/like/:id",isloggedin ,async (req , res)=>{
-    let post = await Post.findOne({_id:req.params.id}).populate("user")
-    // console.log(req.user);
-    post.like.push(req.user.userid)
-    await post.save();
-    res.redirect("/profile")
-})
+app.get("/like/:id", isloggedin, async (req, res) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).send("Invalid Post ID.");
+        }
+        
+        const post = await Post.findOne({ _id: req.params.id });
+        if (!post) {
+            return res.status(404).send("Post not found.");
+        }
+
+        // Toggle like
+        const userId = req.user.userid;
+        const userIndex = post.like.indexOf(userId);
+        if (userIndex > -1) {
+            post.like.splice(userIndex, 1); // Unlike
+        } else {
+            post.like.push(userId); // Like
+        }
+        
+        await post.save();
+        res.redirect("/profile");
+    } catch (error) {
+        console.error("Error liking post:", error);
+        res.status(500).send("Error processing like request");
+    }
+});
 
 // Edit post route
 app.post("/post/edit/:id", isloggedin, async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).send("Invalid Post ID.");
+        }
         const { content } = req.body;
         // Find the post first
         const post = await Post.findOne({ _id: req.params.id });
@@ -134,6 +167,38 @@ app.post("/post/edit/:id", isloggedin, async (req, res) => {
     } catch (error) {
         console.error("Error editing post:", error);
         res.status(500).send("Error editing post");
+    }
+});
+
+app.get("/post/delete/:id", isloggedin, async (req, res) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).send("Invalid Post ID.");
+        }
+        const post = await Post.findOne({ _id: req.params.id });
+
+        if (!post) {
+            return res.status(404).send("Post not found.");
+        }
+
+        // Check if the logged-in user is the author of the post
+        if (post.user.toString() !== req.user.userid.toString()) {
+            return res.status(403).send("You do not have permission to delete this post.");
+        }
+
+        // Now delete the post
+        await Post.findByIdAndDelete(req.params.id);
+
+        // Also remove the post from the user's posts array
+        const user = await User.findById(req.user.userid);
+        if(user){
+            user.posts.pull(post._id);
+            await user.save();
+        }
+        res.redirect("/profile");
+    } catch (error) {
+        console.error("Error deleting post:", error);
+        res.status(500).send("Error deleting post");
     }
 });
 
@@ -171,11 +236,3 @@ const connectDB = async () => {
 };
 
 connectDB();
-
-//database connection 
-try {
-    mongoose.connect("mongodb://127.0.0.1:27017/app1");
-    console.log(`MongoDb connected succesfully`);
-} catch (error) {
-    console.log(`MongoDb connection error :${error}`);   
-}
