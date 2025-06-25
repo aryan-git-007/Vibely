@@ -7,7 +7,8 @@ import Post from "./models/post.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
-
+import upload from "./config/multerconfig.js"
+ 
 const app = express();
 const port = 8000;
 
@@ -54,11 +55,24 @@ app.get("/create",(req,res)=>{
             password:hash
            });
            const token = jwt.sign({email: email, userid: user._id}, "secret");
-           res.cookie("token", token);
+           res.cookie("token", token); 
            res.redirect('/login?message=Registration+successful.+Please+login.');
         })
     });
 });
+
+//multer
+app.get("/profile/upload" ,(req,res)=>{
+    res.render("profileupload")
+})
+
+app.post("/upload", isloggedin, upload.single("image"), async (req, res) => {
+//   console.log(req.file);
+   let user = await User.findOne({email : req.user.email})
+     user.profile = req.file.filename;
+     user.save()
+    res.redirect("/profile")
+    })
 
 //login user 
 app.post("/login",async (req, res) => {
@@ -170,6 +184,8 @@ app.post("/post/edit/:id", isloggedin, async (req, res) => {
     }
 });
 
+
+//delete feature
 app.get("/post/delete/:id", isloggedin, async (req, res) => {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.params.id)) {

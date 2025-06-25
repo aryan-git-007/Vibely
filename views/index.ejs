@@ -1,104 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Create Account</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif']
-          },
-          colors: {
-            glass: 'rgba(39, 39, 42, 0.6)'
-          },
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif']
+            },
+            colors: {
+              glass: 'rgba(39, 39, 42, 0.6)'
+            },
+            boxShadow: {
+              glow: '0 0 15px rgba(99, 102, 241, 0.6)'
+            }
+          }
         }
-      }
-    };
-  </script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="bg-gradient-to-tr from-zinc-900 via-zinc-800 to-zinc-900 min-h-screen flex items-center justify-center font-sans">
+      };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-gradient-to-tr from-zinc-900 via-zinc-800 to-zinc-900 min-h-screen flex items-center justify-center font-sans relative overflow-hidden">
 
-  <div class="relative w-full max-w-lg p-1 rounded-3xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 shadow-xl">
-    <div class="bg-glass w-full h-full rounded-[inherit] p-10 backdrop-blur-md border border-zinc-700">
-      
-      <h2 class="text-4xl font-bold text-white text-center mb-3 tracking-wide animate-fade-in">Create Account</h2>
-      <p class="text-zinc-300 text-center mb-8 text-sm">Start your journey with us today</p>
+    <!-- Floating Gradient Glow Backgrounds -->
+    <div class="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-purple-500 rounded-full opacity-20 blur-3xl animate-pulse-slow"></div>
+    <div class="absolute bottom-[-100px] right-[-100px] w-[300px] h-[300px] bg-pink-500 rounded-full opacity-20 blur-3xl animate-pulse-slow"></div>
 
-      <form action="/register" method="POST" class="space-y-5 animate-slide-in">
-        <div>
-          <label class="block mb-1 text-sm text-zinc-300">Name</label>
-          <input 
-            class="w-full px-4 py-2.5 rounded-lg bg-zinc-800/80 border border-zinc-600 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
-            type="text" name="name" placeholder="Enter your name" required />
+    <div class="relative w-full max-w-md p-1 rounded-3xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 shadow-glow">
+      <div class="bg-glass w-full h-full rounded-[inherit] p-8 sm:p-10 backdrop-blur-lg border border-zinc-700">
+        
+        <!-- Logo or Icon -->
+        <div class="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
         </div>
 
-        <div>
-          <label class="block mb-1 text-sm text-zinc-300">Username</label>
-          <input 
-            class="w-full px-4 py-2.5 rounded-lg bg-zinc-800/80 border border-zinc-600 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
-            type="text" name="username" placeholder="Choose a username" required />
-        </div>
+        <h2 class="text-3xl font-bold text-white text-center mb-2 tracking-wide animate-fade-in">Create Account</h2>
+        <p class="text-zinc-400 text-center mb-8 text-sm">Start your journey with us today</p>
 
-        <div>
-          <label class="block mb-1 text-sm text-zinc-300">Age</label>
-          <input 
-            class="w-full px-4 py-2.5 rounded-lg bg-zinc-800/80 border border-zinc-600 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
-            type="number" name="age" placeholder="Enter your age" required />
-        </div>
+        <form action="/register" method="POST" class="space-y-5 animate-slide-in">
+          <div>
+            <label class="block mb-1 text-sm text-zinc-300">Name</label>
+            <input 
+              class="w-full px-4 py-2.5 rounded-lg bg-zinc-800/80 border border-zinc-600 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+              type="text" name="name" placeholder="Enter your name" required />
+          </div>
 
-        <div>
-          <label class="block mb-1 text-sm text-zinc-300">Email</label>
-          <input 
-            class="w-full px-4 py-2.5 rounded-lg bg-zinc-800/80 border border-zinc-600 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
-            type="email" name="email" placeholder="Enter your email" required />
-        </div>
+          <div>
+            <label class="block mb-1 text-sm text-zinc-300">Username</label>
+            <input 
+              class="w-full px-4 py-2.5 rounded-lg bg-zinc-800/80 border border-zinc-600 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+              type="text" name="username" placeholder="Choose a username" required />
+          </div>
 
-        <div>
-          <label class="block mb-1 text-sm text-zinc-300">Password</label>
-          <input 
-            class="w-full px-4 py-2.5 rounded-lg bg-zinc-800/80 border border-zinc-600 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
-            type="password" name="password" placeholder="Create a password" required />
-        </div>
+          <div>
+            <label class="block mb-1 text-sm text-zinc-300">Age</label>
+            <input 
+              class="w-full px-4 py-2.5 rounded-lg bg-zinc-800/80 border border-zinc-600 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+              type="number" name="age" placeholder="Enter your age" required />
+          </div>
 
-        <button 
-          type="submit" 
-          class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 transition-all duration-200 py-2.5 rounded-lg font-semibold text-white shadow-lg hover:shadow-blue-500/50"
-        >
-          Create Account
-        </button>
-      </form>
+          <div>
+            <label class="block mb-1 text-sm text-zinc-300">Email</label>
+            <input 
+              class="w-full px-4 py-2.5 rounded-lg bg-zinc-800/80 border border-zinc-600 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+              type="email" name="email" placeholder="Enter your email" required />
+          </div>
 
-      <p class="text-center text-sm text-zinc-400 mt-6">
-        Already have an account? 
-        <a href="/login" class="text-blue-400 hover:underline hover:text-blue-300 transition">Login here</a>
-      </p>
+          <div>
+            <label class="block mb-1 text-sm text-zinc-300">Password</label>
+            <input 
+              class="w-full px-4 py-2.5 rounded-lg bg-zinc-800/80 border border-zinc-600 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+              type="password" name="password" placeholder="Create a password" required />
+          </div>
+
+          <button 
+            type="submit" 
+            class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 active:scale-95 transition-all duration-200 py-3 rounded-lg font-semibold text-white shadow-lg flex items-center justify-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Create Account
+          </button>
+        </form>
+
+        <p class="text-center text-sm text-zinc-400 mt-6">
+          Already have an account? 
+          <a href="/login" class="text-blue-400 hover:underline hover:text-blue-300 transition">Login here</a>
+        </p>
+      </div>
     </div>
-  </div>
 
-  <!-- Animation utilities -->
-  <style>
-    @keyframes fade-in {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    <!-- Animation + Extra Styles -->
+    <style>
+      @keyframes fade-in {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
 
-    @keyframes slide-in {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+      @keyframes slide-in {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
 
-    .animate-fade-in {
-      animation: fade-in 0.6s ease-in-out forwards;
-    }
+      @keyframes pulse-slow {
+        0%, 100% { transform: scale(1); opacity: 0.2; }
+        50% { transform: scale(1.1); opacity: 0.4; }
+      }
 
-    .animate-slide-in {
-      animation: slide-in 0.7s ease-in-out forwards;
-    }
-  </style>
-</body>
+      .animate-fade-in {
+        animation: fade-in 0.6s ease-in-out forwards;
+      }
+
+      .animate-slide-in {
+        animation: slide-in 0.7s ease-in-out forwards;
+      }
+
+      .animate-pulse-slow {
+        animation: pulse-slow 6s ease-in-out infinite;
+      }
+    </style>
+  </body>
 </html>
