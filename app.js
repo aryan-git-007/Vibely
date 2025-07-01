@@ -110,17 +110,19 @@ app.get('/profile', isloggedin ,async (req,res)=>{
 })
 
 //post
-app.post("/post", isloggedin, async (req,res)=>{
-    let user = await User.findOne({email : req.user.email});
-    let {content} =req.body;
-   let post = await Post.create({
-        user:user._id,
-        content
+app.post("/post", isloggedin, upload.single('photo'), async (req, res) => {
+    let user = await User.findOne({ email: req.user.email });
+    let { content } = req.body;
+    let photo = req.file ? req.file.filename : undefined;
+    let post = await Post.create({
+        user: user._id,
+        content,
+        photo
     });
     user.posts.push(post._id);
     await user.save();
     res.redirect("/profile");
-})
+});
 
 //like feature
 app.get("/like/:id", isloggedin, async (req, res) => {

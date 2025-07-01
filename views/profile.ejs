@@ -6,130 +6,792 @@
   <title>Vibely | Your Posts</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      --card-gradient: linear-gradient(145deg, rgba(39, 39, 42, 0.8) 0%, rgba(24, 24, 27, 0.9) 100%);
+      --glass-effect: rgba(255, 255, 255, 0.05);
+    }
+    
     body {
       font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at 10% 20%, #1e1e2e 0%, #18181b 90%);
+      min-height: 100vh;
     }
+    
+    .floating {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .glow {
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    }
+    
+    .glass-card {
+      background: var(--glass-effect);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .hover-scale {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .hover-scale:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    
+    .gradient-text {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .gradient-border {
+      position: relative;
+    }
+    
+    .gradient-border::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: inherit;
+      padding: 2px;
+      background: var(--primary-gradient);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    
+    .like-animation {
+      animation: like 0.6s ease;
+    }
+    
     @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes like {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.2); }
+      50% { transform: scale(0.9); }
+      75% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .typewriter {
+      overflow: hidden;
+      border-right: 3px solid #3b82f6;
+      white-space: nowrap;
+      margin: 0 auto;
+      letter-spacing: 0.15em;
+      animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+    }
+    
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+    
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: #3b82f6; }
+    }
+    
+    .parallax-bg {
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+    
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
     }
   </style>
 </head>
-<body class="bg-gradient-to-tr from-zinc-950 to-zinc-900 text-white min-h-screen">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <!-- Header -->
-    <nav class="flex justify-between items-center py-4 px-6 bg-zinc-900/70 rounded-3xl shadow-lg border border-zinc-700">
-      <h1 class="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-sky-500 to-purple-500 bg-clip-text text-transparent animate-pulse">Vibely</h1>
+<body class="text-white min-h-screen overflow-x-hidden">
+  <!-- Floating particles background -->
+  <div id="particles-js" class="fixed inset-0 -z-10"></div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+    <!-- Header with 3D effect -->
+    <nav class="flex justify-between items-center py-4 px-6 glass-card rounded-3xl shadow-2xl mb-6 gradient-border hover-scale">
+      <div class="flex items-center">
+        <h1 class="text-4xl font-extrabold tracking-tighter gradient-text animate__animated animate__fadeIn">Vibely</h1>
+        <span class="ml-2 text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full animate-pulse">BETA</span>
+      </div>
       <div class="flex items-center gap-4">
-        <button id="hamburgerBtn" class="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg hover:bg-zinc-800 focus:outline-none transition-all duration-300" onclick="toggleMenu()">
-          <span class="block w-6 h-0.5 bg-white mb-1 transition-all"></span>
-          <span class="block w-6 h-0.5 bg-white mb-1 transition-all"></span>
-          <span class="block w-6 h-0.5 bg-white transition-all"></span>
+        <button id="hamburgerBtn" class="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-lg hover:bg-zinc-800/50 focus:outline-none transition-all duration-300 group" onclick="toggleMenu()">
+          <span class="block w-6 h-0.5 bg-white mb-1.5 transition-all group-hover:bg-blue-400"></span>
+          <span class="block w-6 h-0.5 bg-white mb-1.5 transition-all group-hover:bg-purple-400"></span>
+          <span class="block w-6 h-0.5 bg-white transition-all group-hover:bg-pink-400"></span>
         </button>
         <div class="hidden md:flex gap-3">
-          <a href="/register" class="px-4 py-2 bg-gradient-to-r from-zinc-800 to-zinc-700 hover:from-zinc-700 hover:to-zinc-600 rounded-xl text-sm font-semibold shadow-md transition-all">Create Account</a>
-          <a href="/profile/upload" class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-xl text-sm font-semibold shadow-md transition-all">Edit Profile</a>
-          <a href="/logout" class="px-4 py-2 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 rounded-xl text-sm font-semibold shadow-md transition-all">Logout</a>
+          <a href="/register" class="px-4 py-2 glass-card hover:bg-zinc-800/50 rounded-xl text-sm font-semibold shadow-md transition-all flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            Create Account
+          </a>
+          <a href="/profile/upload" class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-xl text-sm font-semibold shadow-md transition-all flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Edit Profile
+          </a>
+          <a href="/logout" class="px-4 py-2 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 rounded-xl text-sm font-semibold shadow-md transition-all flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Logout
+          </a>
         </div>
-        <div id="mobileMenu" class="absolute top-20 right-4 w-60 bg-zinc-900 border border-zinc-700 rounded-2xl shadow-xl hidden flex-col md:hidden">
-          <a href="/register" class="px-6 py-3 hover:bg-zinc-800 rounded-t-2xl transition-colors">Create Account</a>
-          <a href="/profile/upload" class="px-6 py-3 hover:bg-zinc-800 border-y border-zinc-700 transition-colors">Edit Profile</a>
-          <a href="/logout" class="px-6 py-3 hover:bg-zinc-800 rounded-b-2xl text-red-400 transition-colors">Logout</a>
-        </div>
+      </div>
+      <div id="mobileMenu" class="absolute top-20 right-4 w-60 bg-zinc-900/95 border border-zinc-700 rounded-2xl shadow-xl hidden flex-col md:hidden backdrop-blur-lg z-50">
+        <a href="/register" class="px-6 py-3 hover:bg-zinc-800/50 rounded-t-2xl transition-colors flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+          Create Account
+        </a>
+        <a href="/profile/upload" class="px-6 py-3 hover:bg-zinc-800/50 border-y border-zinc-700 transition-colors flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Edit Profile
+        </a>
+        <a href="/logout" class="px-6 py-3 hover:bg-zinc-800/50 rounded-b-2xl text-red-400 transition-colors flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Logout
+        </a>
       </div>
     </nav>
 
-    <!-- Profile -->
-    <div class="flex items-center gap-6 bg-zinc-800/50 border border-zinc-700 rounded-3xl shadow-lg p-6 mt-8">
-      <div class="w-20 h-20 rounded-2xl overflow-hidden ring-4 ring-blue-500/30 shadow-md">
-        <img src="/uploads/<%= user.profile %>" alt="user-profile" class="w-full h-full object-cover">
+    <!-- Profile with floating animation -->
+    <div class="flex items-center gap-6 glass-card rounded-3xl shadow-xl p-6 mt-8 hover-scale gradient-border animate__animated animate__fadeInUp">
+      <div class="relative">
+        <div class="w-24 h-24 rounded-2xl overflow-hidden ring-4 ring-blue-500/30 shadow-lg relative">
+          <img src="/uploads/<%= user.profile %>" alt="user-profile" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10"></div>
+        </div>
+        <div class="absolute -bottom-2 -right-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md animate-bounce">PRO</div>
       </div>
       <div>
-        <h2 class="text-3xl font-bold">Hey, <%= user.name %> 👋</h2>
-        <p class="text-lg text-green-400 mt-1">What vibe are you sharing today?</p>
+        <h2 class="text-3xl font-bold flex items-center">
+          <span class="gradient-text"><%= user.name %></span>
+          <span class="ml-3 text-2xl animate__animated animate__wobble animate__infinite animate__slower">👋</span>
+        </h2>
+        <p class="text-lg text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mt-1 flex items-center">
+          <span class="typewriter">What vibe are you sharing today?</span>
+          <span class="ml-2 animate-pulse">✨</span>
+        </p>
+        <div class="flex gap-2 mt-3">
+          <span class="text-xs bg-zinc-700/50 text-zinc-300 px-2 py-1 rounded-full">@<%= user.username %></span>
+          <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded-full flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            <%= user.posts.length %> vibes
+          </span>
+        </div>
       </div>
     </div>
 
-    <!-- Post Form -->
-    <form action="/post" method="POST" class="mt-10 bg-zinc-800/40 border border-zinc-700 rounded-3xl shadow-xl p-6 lg:w-2/3 transition-all">
-      <textarea name="content" placeholder="What's on your mind?" rows="4" class="w-full bg-zinc-900/60 border border-zinc-700 rounded-xl text-white p-4 placeholder:text-zinc-400 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-      <input type="submit" value="Post Vibe ✨" class="mt-4 w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-lg font-semibold rounded-xl shadow-md cursor-pointer transition-all">
+    <!-- Post Form with floating effect -->
+    <form action="/post" method="POST" enctype="multipart/form-data" class="mt-10 glass-card rounded-3xl shadow-xl p-6 lg:w-2/3 mx-auto hover-scale animate__animated animate__fadeInUp animate__delay-1s">
+      <div class="relative">
+        <textarea name="content" placeholder="What's on your mind?" rows="4" class="w-full bg-zinc-900/60 border border-zinc-700 rounded-xl text-white p-4 placeholder:text-zinc-400 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 resize-none"></textarea>
+        <div class="absolute bottom-3 right-3 flex items-center gap-2">
+          <span id="charCount" class="text-xs text-zinc-500">0/500</span>
+        </div>
+      </div>
+      <div class="flex items-center mt-4 gap-3">
+        <label for="photo-upload" class="cursor-pointer flex items-center justify-center w-12 h-12 rounded-lg border border-zinc-600 hover:border-blue-500 transition-all group relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <input id="photo-upload" type="file" name="photo" accept="image/*" class="hidden">
+        </label>
+        <label for="gif-upload" class="cursor-pointer flex items-center justify-center w-12 h-12 rounded-lg border border-zinc-600 hover:border-purple-500 transition-all group relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <input id="gif-upload" type="file" name="gif" accept="image/gif" class="hidden">
+        </label>
+        <div class="flex-1 relative">
+          <input type="submit" value="Post Vibe ✨" class="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-lg font-semibold rounded-xl shadow-md cursor-pointer transition-all hover:shadow-lg hover:shadow-blue-500/20">
+          <div class="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-xl opacity-0 hover:opacity-100 transition-opacity pointer-events-none"></div>
+        </div>
+      </div>
+      <div id="preview-container" class="mt-4 hidden">
+        <div class="relative">
+          <img id="media-preview" class="w-full rounded-xl max-h-80 object-cover">
+          <button id="remove-preview" class="absolute top-2 right-2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </form>
 
     <!-- Posts Section -->
-    <div class="mt-12 space-y-6">
-      <h3 class="text-xl font-semibold text-zinc-400">Your Posts</h3>
+    <div class="mt-12 space-y-6 animate__animated animate__fadeInUp animate__delay-1s">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+          </svg>
+          Your Vibes
+        </h3>
+        <div class="relative">
+          <button id="sortButton" class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/50 border border-zinc-700 rounded-lg text-sm hover:bg-zinc-700/50 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+            </svg>
+            Newest
+          </button>
+          <div id="sortDropdown" class="absolute right-0 mt-1 w-40 bg-zinc-900/95 border border-zinc-700 rounded-lg shadow-lg z-10 hidden backdrop-blur-lg">
+            <button class="w-full text-left px-4 py-2 hover:bg-zinc-800/50 rounded-t-lg transition-colors flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+              </svg>
+              Newest
+            </button>
+            <button class="w-full text-left px-4 py-2 hover:bg-zinc-800/50 transition-colors flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+              </svg>
+              Oldest
+            </button>
+            <button class="w-full text-left px-4 py-2 hover:bg-zinc-800/50 rounded-b-lg transition-colors flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              Most Liked
+            </button>
+          </div>
+        </div>
+      </div>
+      
       <% if(user.posts && user.posts.length > 0) { %>
         <% user.posts.forEach(function(post){ %>
-          <!-- Post Card -->
-          <div class="bg-zinc-800/40 p-6 rounded-2xl border border-zinc-700 shadow-md lg:w-2/3">
+          <!-- Post Card with interactive elements -->
+          <div class="glass-card p-6 rounded-2xl border border-zinc-700 shadow-lg lg:w-2/3 mx-auto hover-scale transition-transform duration-300 group" id="post-<%= post._id %>">
             <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-lg overflow-hidden">
+              <div class="w-10 h-10 rounded-lg overflow-hidden relative">
                 <img src="/uploads/<%= user.profile %>" alt="user-profile" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10"></div>
               </div>
-              <h4 class="text-blue-400 font-semibold">@<%= user.username %></h4>
+              <div>
+                <h4 class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-semibold">@<%= user.username %></h4>
+                <p class="text-xs text-zinc-400"><%= new Date(post.createdAt).toLocaleString() %></p>
+              </div>
+              <div class="ml-auto">
+                <div class="flex gap-1">
+                  <% if (post.user.toString() === loggedInUserId.toString()) { %>
+                    <button onclick="openEditModal('<%= post._id %>', `<%- post.content %>`)" class="w-8 h-8 flex items-center justify-center rounded-lg border border-zinc-600 text-zinc-400 hover:text-blue-400 hover:border-blue-500 transition-all opacity-0 group-hover:opacity-100">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <a href="/post/delete/<%= post._id %>" onclick="return confirm('Delete this vibe?')" class="w-8 h-8 flex items-center justify-center rounded-lg border border-zinc-600 text-zinc-400 hover:text-red-400 hover:border-red-500 transition-all opacity-0 group-hover:opacity-100">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </a>
+                  <% } %>
+                </div>
+              </div>
             </div>
-            <p class="text-zinc-100 text-base leading-relaxed mb-4"><%= post.content %></p>
+            
+            <% if (post.photo) { %>
+              <div class="relative mb-4 rounded-xl overflow-hidden">
+                <img src="/uploads/<%= post.photo %>" alt="Post Photo" class="w-full max-h-96 object-cover rounded-xl transition-transform duration-500 group-hover:scale-105" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                  <span class="text-white text-sm font-medium">Click to view full size</span>
+                </div>
+              </div>
+            <% } %>
+            
+            <p class="text-zinc-100 text-base leading-relaxed mb-4 whitespace-pre-wrap"><%= post.content %></p>
+            
             <div class="flex justify-between items-center">
-              <span class="text-zinc-400 text-sm font-medium"><%= post.like.length %> likes</span>
-              <div class="flex gap-3">
+              <div class="flex items-center gap-2">
                 <% const isLiked = post.like.map(id => id.toString()).includes(loggedInUserId.toString()); %>
-                <a href="/like/<%= post._id %>" class="group w-10 h-10 rounded-lg border border-zinc-600 hover:border-red-500/60 text-gray-400 hover:text-red-500 transition-all duration-300 <%= isLiked ? 'liked border-red-500/60' : '' %>">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="w-6 h-6 mx-auto mt-2 group-[.liked]:hidden" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8.25c0-2.485-2.014-4.5-4.5-4.5-1.636 0-3.067.876-3.875 2.194A4.494 4.494 0 0 0 6.75 3.75c-2.485 0-4.5 2.015-4.5 4.5 0 7.5 9 12 9 12s9-4.5 9-12z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="hidden w-6 h-6 text-red-500 group-[.liked]:block mx-auto mt-2" viewBox="0 0 24 24">
-                    <path d="M12.001 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54l-1.45 1.31z" />
-                  </svg>
+                <a href="/like/<%= post._id %>" class="flex items-center gap-1 like-btn <%= isLiked ? 'liked' : '' %>" data-post-id="<%= post._id %>">
+                  <div class="relative w-8 h-8 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="w-6 h-6 absolute like-icon <%= isLiked ? 'hidden' : '' %>" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8.25c0-2.485-2.014-4.5-4.5-4.5-1.636 0-3.067.876-3.875 2.194A4.494 4.494 0 0 0 6.75 3.75c-2.485 0-4.5 2.015-4.5 4.5 0 7.5 9 12 9 12s9-4.5 9-12z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="hidden w-6 h-6 text-red-500 liked-icon <%= isLiked ? '' : 'hidden' %>" viewBox="0 0 24 24">
+                      <path d="M12.001 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54l-1.45 1.31z" />
+                    </svg>
+                    <div class="absolute inset-0 bg-gradient-to-br from-red-500/10 to-pink-500/10 rounded-full opacity-0 hover:opacity-100 transition-opacity"></div>
+                  </div>
+                  <span class="text-sm font-medium <%= isLiked ? 'text-red-400' : 'text-zinc-400' %>"><%= post.like.length %></span>
                 </a>
-                <% if (post.user.toString() === loggedInUserId.toString()) { %>
-                  <a href="#" onclick="openEditModal('<%= post._id %>', `<%- post.content %>`)" class="w-10 h-10 flex items-center justify-center rounded-lg border border-zinc-600 text-zinc-400 hover:text-blue-400 hover:border-blue-500 transition-all">
-                    ✏️
-                  </a>
-                  <a href="/post/delete/<%= post._id %>" onclick="return confirm('Delete this post?')" class="w-10 h-10 flex items-center justify-center rounded-lg border border-zinc-600 text-zinc-400 hover:text-red-400 hover:border-red-500 transition-all">
-                    🗑️
-                  </a>
-                <% } %>
+                
+                <button class="flex items-center gap-1 comment-btn" data-post-id="<%= post._id %>">
+                  <div class="relative w-8 h-8 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full opacity-0 hover:opacity-100 transition-opacity"></div>
+                  </div>
+                  <span class="text-sm font-medium text-zinc-400">12</span>
+                </button>
+              </div>
+              
+              <button class="text-zinc-400 hover:text-blue-400 text-sm font-medium flex items-center gap-1 share-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                Share
+              </button>
+            </div>
+            
+            <!-- Comments section (hidden by default) -->
+            <div class="mt-4 hidden comments-section" id="comments-<%= post._id %>">
+              <div class="border-t border-zinc-700 pt-4">
+                <div class="flex items-start gap-3 mb-4">
+                  <div class="w-8 h-8 rounded-full overflow-hidden">
+                    <img src="/uploads/<%= user.profile %>" alt="user-profile" class="w-full h-full object-cover">
+                  </div>
+                  <div class="flex-1">
+                    <div class="bg-zinc-800/50 rounded-xl p-3">
+                      <p class="text-sm text-white">This is an example comment. Real comments would be loaded via AJAX.</p>
+                    </div>
+                    <div class="flex items-center gap-2 mt-1 ml-2">
+                      <button class="text-xs text-zinc-400 hover:text-blue-400">Like</button>
+                      <span class="text-xs text-zinc-500">•</span>
+                      <span class="text-xs text-zinc-400">2h ago</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <form class="flex items-center gap-2 mt-2">
+                  <div class="flex-1 relative">
+                    <input type="text" placeholder="Add a comment..." class="w-full bg-zinc-900/60 border border-zinc-700 rounded-full text-white px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                  </div>
+                  <button type="submit" class="w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </form>
               </div>
             </div>
           </div>
         <% }) %>
       <% } else { %>
-        <div class="bg-zinc-800/40 p-8 rounded-2xl text-center border border-zinc-700 shadow-md lg:w-2/3">
-          <p class="text-zinc-400 text-lg">No vibes yet. Be the first to post something cool! ✨</p>
+        <!-- Empty state with animation -->
+        <div class="glass-card p-8 rounded-2xl text-center border border-zinc-700 shadow-lg lg:w-2/3 mx-auto flex flex-col items-center">
+          <div class="w-24 h-24 mb-4 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 flex items-center justify-center animate-pulse">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-2">No vibes yet</h3>
+          <p class="text-zinc-400 mb-4">Share your first vibe and start connecting with others!</p>
+          <button class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-lg text-sm font-semibold shadow-md transition-all flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Create Your First Vibe
+          </button>
         </div>
       <% } %>
     </div>
   </div>
 
-  <!-- Edit Modal -->
-  <div id="editModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center">
-    <div class="bg-zinc-800 p-6 rounded-2xl border border-zinc-700 shadow-2xl w-11/12 md:w-2/3 lg:w-1/3">
-      <h3 class="text-2xl font-bold mb-4 text-center text-blue-400">Edit Your Vibe</h3>
-      <form id="editForm" method="POST">
-        <textarea id="editContent" name="content" rows="4" class="w-full p-4 bg-zinc-900 border border-zinc-700 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-        <div class="flex justify-end gap-3 mt-4">
-          <button type="button" onclick="closeEditModal()" class="px-5 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg font-medium transition-all">Cancel</button>
-          <input type="submit" value="Save" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-lg cursor-pointer font-medium transition-all" />
-        </div>
-      </form>
+  <!-- Floating action button -->
+  <div class="fixed bottom-6 right-6 z-40">
+    <button class="w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 shadow-xl flex items-center justify-center text-white hover:from-blue-500 hover:to-purple-500 transition-all transform hover:scale-110 glow floating">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Edit Modal with glass effect -->
+  <div id="editModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-card rounded-2xl border border-zinc-700 shadow-2xl w-full max-w-md relative overflow-hidden">
+      <div class="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-blue-500/10 filter blur-xl"></div>
+      <div class="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-purple-500/10 filter blur-xl"></div>
+      <div class="relative z-10 p-6">
+        <h3 class="text-2xl font-bold mb-4 text-center gradient-text">Edit Your Vibe</h3>
+        <form id="editForm" method="POST" class="space-y-4">
+          <div class="relative">
+            <textarea id="editContent" name="content" rows="4" class="w-full p-4 bg-zinc-900/60 border border-zinc-700 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm"></textarea>
+            <div class="absolute bottom-3 right-3">
+              <span id="editCharCount" class="text-xs text-zinc-500">0/500</span>
+            </div>
+          </div>
+          <div class="flex justify-end gap-3">
+            <button type="button" onclick="closeEditModal()" class="px-5 py-2 bg-zinc-700/50 hover:bg-zinc-600/50 rounded-lg font-medium transition-all">Cancel</button>
+            <input type="submit" value="Save Changes" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-lg cursor-pointer font-medium transition-all" />
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
+  <!-- Notification toast -->
+  <div id="toast" class="fixed top-4 right-4 bg-zinc-800/90 border border-zinc-700 rounded-xl shadow-2xl px-4 py-3 flex items-start gap-3 max-w-xs transform translate-x-40 opacity-0 transition-all duration-300 z-50 backdrop-blur-sm">
+    <div class="mt-0.5">
+      <div class="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </div>
+    <div>
+      <h4 class="font-medium text-white">Success!</h4>
+      <p class="text-sm text-zinc-300 mt-0.5" id="toast-message">Your changes have been saved.</p>
+    </div>
+    <button onclick="hideToast()" class="ml-auto text-zinc-400 hover:text-white">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
   <script>
+    // Particles.js initialization
+    document.addEventListener('DOMContentLoaded', function() {
+      if (document.getElementById('particles-js')) {
+        particlesJS('particles-js', {
+          "particles": {
+            "number": {
+              "value": 80,
+              "density": {
+                "enable": true,
+                "value_area": 800
+              }
+            },
+            "color": {
+              "value": "#3b82f6"
+            },
+            "shape": {
+              "type": "circle",
+              "stroke": {
+                "width": 0,
+                "color": "#000000"
+              },
+              "polygon": {
+                "nb_sides": 5
+              }
+            },
+            "opacity": {
+              "value": 0.3,
+              "random": true,
+              "anim": {
+                "enable": true,
+                "speed": 1,
+                "opacity_min": 0.1,
+                "sync": false
+              }
+            },
+            "size": {
+              "value": 3,
+              "random": true,
+              "anim": {
+                "enable": false,
+                "speed": 40,
+                "size_min": 0.1,
+                "sync": false
+              }
+            },
+            "line_linked": {
+              "enable": true,
+              "distance": 150,
+              "color": "#3b82f6",
+              "opacity": 0.2,
+              "width": 1
+            },
+            "move": {
+              "enable": true,
+              "speed": 1,
+              "direction": "none",
+              "random": true,
+              "straight": false,
+              "out_mode": "out",
+              "bounce": false,
+              "attract": {
+                "enable": false,
+                "rotateX": 600,
+                "rotateY": 1200
+              }
+            }
+          },
+          "interactivity": {
+            "detect_on": "canvas",
+            "events": {
+              "onhover": {
+                "enable": true,
+                "mode": "grab"
+              },
+              "onclick": {
+                "enable": true,
+                "mode": "push"
+              },
+              "resize": true
+            },
+            "modes": {
+              "grab": {
+                "distance": 140,
+                "line_linked": {
+                  "opacity": 0.5
+                }
+              },
+              "bubble": {
+                "distance": 400,
+                "size": 40,
+                "duration": 2,
+                "opacity": 8,
+                "speed": 3
+              },
+              "repulse": {
+                "distance": 200,
+                "duration": 0.4
+              },
+              "push": {
+                "particles_nb": 4
+              },
+              "remove": {
+                "particles_nb": 2
+              }
+            }
+          },
+          "retina_detect": true
+        });
+      }
+    });
+
+    // Character counter for textareas
+    const contentTextarea = document.querySelector('textarea[name="content"]');
+    const charCount = document.getElementById('charCount');
+    const editContentTextarea = document.getElementById('editContent');
+    const editCharCount = document.getElementById('editCharCount');
+    
+    if (contentTextarea && charCount) {
+      contentTextarea.addEventListener('input', function() {
+        const remaining = 500 - this.value.length;
+        charCount.textContent = `${this.value.length}/500`;
+        charCount.className = remaining < 50 ? 'text-xs text-red-400' : 'text-xs text-zinc-500';
+      });
+    }
+    
+    if (editContentTextarea && editCharCount) {
+      editContentTextarea.addEventListener('input', function() {
+        const remaining = 500 - this.value.length;
+        editCharCount.textContent = `${this.value.length}/500`;
+        editCharCount.className = remaining < 50 ? 'text-xs text-red-400' : 'text-xs text-zinc-500';
+      });
+    }
+
+    // Image preview for file upload
+    const photoUpload = document.getElementById('photo-upload');
+    const gifUpload = document.getElementById('gif-upload');
+    const previewContainer = document.getElementById('preview-container');
+    const mediaPreview = document.getElementById('media-preview');
+    const removePreview = document.getElementById('remove-preview');
+    
+    if (photoUpload) {
+      photoUpload.addEventListener('change', function(e) {
+        if (e.target.files.length) {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+          
+          reader.onload = function(event) {
+            mediaPreview.src = event.target.result;
+            previewContainer.classList.remove('hidden');
+          };
+          
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    
+    if (gifUpload) {
+      gifUpload.addEventListener('change', function(e) {
+        if (e.target.files.length) {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+          
+          reader.onload = function(event) {
+            mediaPreview.src = event.target.result;
+            previewContainer.classList.remove('hidden');
+          };
+          
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    
+    if (removePreview) {
+      removePreview.addEventListener('click', function(e) {
+        e.preventDefault();
+        previewContainer.classList.add('hidden');
+        mediaPreview.src = '';
+        if (photoUpload) photoUpload.value = '';
+        if (gifUpload) gifUpload.value = '';
+      });
+    }
+
+    // Like button animation
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.like-btn')) {
+        e.preventDefault();
+        const likeBtn = e.target.closest('.like-btn');
+        const postId = likeBtn.dataset.postId;
+        const likeIcon = likeBtn.querySelector('.like-icon');
+        const likedIcon = likeBtn.querySelector('.liked-icon');
+        const likeCount = likeBtn.querySelector('span');
+        
+        // Toggle icons
+        likeIcon.classList.toggle('hidden');
+        likedIcon.classList.toggle('hidden');
+        
+        // Add animation class
+        likedIcon.classList.add('like-animation');
+        
+        // Remove animation class after animation completes
+        setTimeout(() => {
+          likedIcon.classList.remove('like-animation');
+        }, 600);
+        
+        // Update like count
+        let count = parseInt(likeCount.textContent);
+        if (likeIcon.classList.contains('hidden')) {
+          count++;
+          likeCount.textContent = count;
+          likeCount.classList.remove('text-zinc-400');
+          likeCount.classList.add('text-red-400');
+        } else {
+          count--;
+          likeCount.textContent = count;
+          likeCount.classList.remove('text-red-400');
+          likeCount.classList.add('text-zinc-400');
+        }
+        
+        // Send AJAX request to server
+        fetch(`/like/${postId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }).then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              showToast(data.error, 'error');
+              // Revert UI changes if error
+              likeIcon.classList.toggle('hidden');
+              likedIcon.classList.toggle('hidden');
+              likeCount.textContent = count;
+            }
+          });
+      }
+      
+      // Toggle comments section
+      if (e.target.closest('.comment-btn')) {
+        e.preventDefault();
+        const commentBtn = e.target.closest('.comment-btn');
+        const postId = commentBtn.dataset.postId;
+        const commentsSection = document.getElementById(`comments-${postId}`);
+        commentsSection.classList.toggle('hidden');
+      }
+      
+      // Toggle sort dropdown
+      if (e.target.closest('#sortButton')) {
+        e.preventDefault();
+        const dropdown = document.getElementById('sortDropdown');
+        dropdown.classList.toggle('hidden');
+      } else if (!e.target.closest('#sortDropdown')) {
+        const dropdown = document.getElementById('sortDropdown');
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    // Show toast notification
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toast-message');
+      
+      toastMessage.textContent = message;
+      
+      // Update toast style based on type
+      const icon = toast.querySelector('div > div');
+      if (type === 'error') {
+        icon.className = 'w-5 h-5 rounded-full bg-red-500 flex items-center justify-center';
+      } else if (type === 'warning') {
+        icon.className = 'w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center';
+      } else {
+        icon.className = 'w-5 h-5 rounded-full bg-green-500 flex items-center justify-center';
+      }
+      
+      toast.classList.remove('translate-x-40', 'opacity-0');
+      toast.classList.add('translate-x-0', 'opacity-100');
+      
+      // Auto hide after 5 seconds
+      setTimeout(hideToast, 5000);
+    }
+    
+    function hideToast() {
+      const toast = document.getElementById('toast');
+      toast.classList.add('translate-x-40', 'opacity-0');
+      toast.classList.remove('translate-x-0', 'opacity-100');
+    }
+
+    // Modal functions
     function openEditModal(postId, content) {
       const modal = document.getElementById('editModal');
       document.getElementById('editForm').action = '/post/edit/' + postId;
       document.getElementById('editContent').value = content;
+      
+      // Update character count
+      if (editCharCount) {
+        editCharCount.textContent = `${content.length}/500`;
+      }
+      
       modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
     }
 
     function closeEditModal() {
       const modal = document.getElementById('editModal');
       modal.classList.add('hidden');
+      document.body.style.overflow = '';
     }
 
+    // Mobile menu toggle
     function toggleMenu() {
       const menu = document.getElementById('mobileMenu');
       const hamburger = document.getElementById('hamburgerBtn');
@@ -146,6 +808,7 @@
       }
     }
 
+    // Close mobile menu when clicking outside
     document.addEventListener('click', function(event) {
       const menu = document.getElementById('mobileMenu');
       const btn = document.getElementById('hamburgerBtn');
@@ -157,6 +820,61 @@
         spans[2].style.transform = '';
       }
     });
+
+    // Add sparkle effect on click
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('button, a, [role="button"]')) {
+        createSparkle(e);
+      }
+    });
+    
+    function createSparkle(e) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      
+      // Position the sparkle at the click location
+      sparkle.style.left = `${e.clientX - 2}px`;
+      sparkle.style.top = `${e.clientY - 2}px`;
+      
+      // Random size and color
+      const size = Math.random() * 6 + 2;
+      sparkle.style.width = `${size}px`;
+      sparkle.style.height = `${size}px`;
+      
+      const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      sparkle.style.backgroundColor = color;
+      
+      document.body.appendChild(sparkle);
+      
+      // Animate the sparkle
+      const angle = Math.random() * Math.PI * 2;
+      const velocity = 5 + Math.random() * 5;
+      const x = Math.cos(angle) * velocity;
+      const y = Math.sin(angle) * velocity;
+      
+      let posX = e.clientX;
+      let posY = e.clientY;
+      let opacity = 1;
+      
+      const animate = () => {
+        posX += x;
+        posY += y;
+        opacity -= 0.02;
+        
+        sparkle.style.left = `${posX}px`;
+        sparkle.style.top = `${posY}px`;
+        sparkle.style.opacity = opacity;
+        
+        if (opacity > 0) {
+          requestAnimationFrame(animate);
+        } else {
+          sparkle.remove();
+        }
+      };
+      
+      requestAnimationFrame(animate);
+    }
   </script>
 </body>
 </html>

@@ -35,46 +35,56 @@
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gradient-to-tr from-[#0f0c29] via-[#302b63] to-[#24243e] min-h-screen flex items-center justify-center font-sans p-4">
-
+<body class="bg-gradient-to-tr from-zinc-900 via-zinc-800 to-zinc-900 min-h-screen flex items-center justify-center font-sans p-4 relative overflow-hidden">
+  <!-- Animated Gradient Blobs -->
+  <div class="absolute top-[-120px] left-[-120px] w-[320px] h-[320px] bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-full opacity-30 blur-3xl animate-pulse-slow"></div>
+  <div class="absolute bottom-[-120px] right-[-120px] w-[320px] h-[320px] bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 rounded-full opacity-30 blur-3xl animate-pulse-slow"></div>
   <div class="relative w-full max-w-md rounded-3xl bg-gradient-to-br from-blue-600 via-purple-700 to-pink-600 p-1 shadow-xl animate-fade">
     <div class="bg-glass w-full h-full rounded-[inherit] p-8 sm:p-10 backdrop-blur-md border border-white/10 shadow-2xl">
-      
       <div class="flex flex-col items-center text-center space-y-3 animate-slide">
-        <div class="w-24 h-24 rounded-full border-4 border-transparent bg-gradient-to-tr from-purple-500 to-pink-500 p-1 shadow-lg">
-          <div class="w-full h-full bg-zinc-800 rounded-full flex items-center justify-center text-white text-2xl font-semibold">
+        <div class="w-28 h-28 rounded-full border-4 border-transparent bg-gradient-to-tr from-purple-500 to-pink-500 p-1 shadow-lg">
+          <div class="w-full h-full bg-zinc-800 rounded-full flex items-center justify-center text-white text-3xl font-semibold">
             <span>👤</span>
           </div>
         </div>
-
-        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-wide">Upload Profile Picture</h2>
-        <p class="text-zinc-300 text-sm">Show the world your face! Upload a cool image of yourself.</p>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 tracking-wide">Upload Profile Picture</h2>
+        <p class="text-zinc-300 text-base">Show the world your face! Upload a cool image of yourself.</p>
       </div>
-
       <form action="/upload" method="POST" enctype="multipart/form-data" class="mt-8 space-y-6 animate-slide">
         <div>
           <label class="block mb-2 text-sm text-zinc-300 font-medium">Choose an image</label>
-          <input 
-            type="file" 
-            name="image"
-            class="block w-full text-sm text-zinc-100 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-gradient-to-r file:from-blue-600 file:to-purple-600 file:text-white hover:file:brightness-110 transition-all duration-200"
-            required
-          >
+          <input type="file" name="image" class="block w-full text-sm text-zinc-100 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-gradient-to-r file:from-blue-600 file:to-purple-600 file:text-white hover:file:brightness-110 transition-all duration-200" required>
         </div>
-
-        <button 
-          type="submit" 
-          class="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-500 hover:to-purple-600 active:scale-95 transition-all duration-200 shadow-md shadow-purple-500/30"
-        >
-          Upload Image
-        </button>
+        <button type="submit" class="w-full py-3 rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-500 hover:to-purple-600 active:scale-95 transition-all duration-200 shadow-md shadow-purple-500/30 animate-fade-in">Upload Image</button>
       </form>
-
-      <p class="text-center text-sm text-zinc-400 mt-6">
+      <p class="text-center text-sm text-zinc-400 mt-6 animate-fade-in">
         Want to return? 
-        <a href="/" class="text-blue-400 hover:underline hover:text-blue-300 transition">Create Account</a>
+        <a href="/" class="text-blue-400 hover:underline hover:text-blue-300 transition font-semibold">Create Account</a>
       </p>
     </div>
   </div>
+  <style>
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-slow {
+      0%, 100% { transform: scale(1); opacity: 0.2; }
+      50% { transform: scale(1.1); opacity: 0.4; }
+    }
+    .animate-fade-in {
+      animation: fade-in 0.7s cubic-bezier(.4,0,.2,1) both;
+    }
+    .animate-slide {
+      animation: slide-up 0.8s cubic-bezier(.4,0,.2,1) both;
+    }
+    .animate-pulse-slow {
+      animation: pulse-slow 7s ease-in-out infinite;
+    }
+  </style>
 </body>
 </html>
